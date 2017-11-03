@@ -60,7 +60,10 @@ router.route('/osos')
 
     // crear un oso (POST http://localhost:8080/api/osos)
     .post(function (req, res) {
-        console.log('Se recibieron los parámetros:',req.body);
+        console.log('Se recibieron los parámetros:', req.body);
+        if (req.body.nombre == null || req.body.cantidad == null) {
+            res.status(422).send("Se debe incluir un nombre y cantidad para crear un oso");
+        }
         var oso = {
             nombre: req.body.nombre,
             cantidad: req.body.cantidad
