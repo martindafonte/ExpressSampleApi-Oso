@@ -2,7 +2,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
-var guid = require('guid');
 
 // Creamos la app express
 var app = express();
@@ -21,20 +20,16 @@ app.use(bodyParser.json());
 // MODELO DE DATOS
 var osos = [{
     nombre: "Pardo",
-    cantidad: 450000,
-    id: guid.raw()
+    cantidad: 450000
 }, {
     nombre: "Panda",
-    cantidad: 10000,
-    id: guid.raw()
+    cantidad: 10000
 }, {
     nombre: "Greasly",
-    cantidad: 125000,
-    id: guid.raw()
+    cantidad: 125000
 }, {
     nombre: "Circo",
-    cantidad: 5000,
-    id: guid.raw()
+    cantidad: 5000
 }];
 
 // RUTAS DE LA API
@@ -65,17 +60,15 @@ router.route('/osos')
 
     // crear un oso (POST http://localhost:8080/api/osos)
     .post(function (req, res) {
-        console.log('Se recibieron los parámetros:', req.body);
+        console.log('Se recibieron los parámetros:',req.body);
         var oso = {
             nombre: req.body.nombre,
-            cantidad: req.body.cantidad,
-            id: guid.raw()
+            cantidad: req.body.cantidad
         };
 
         osos.push(oso);
         res.json({
-            mensaje: 'Oso agregado!',
-            data: oso
+            mensaje: 'Oso agregado!'
         });
     })
 
@@ -90,7 +83,7 @@ router.route('/osos/:oso_id')
 
     // devuelve un oso en particular
     .get(function (req, res) {
-        var oso = osos.filter(x => x.id == req.params.oso_id);
+        var oso = osos[+(req.params.oso_id)];
         if (oso === null || oso === undefined)
             res.status(404).send({
                 mensaje: "No existe el oso con id: " + req.params.oso_id
@@ -100,7 +93,7 @@ router.route('/osos/:oso_id')
 
     // actualizar el oso con este id
     .put(function (req, res) {
-        var oso = osos.filter(x => x.id == req.params.oso_id);
+        var oso = osos[+(req.params.oso_id)];
         if (oso === null || oso === undefined) {
             res.status(404).send({
                 message: "No existe el oso con id: " + req.params.oso_id
@@ -109,20 +102,7 @@ router.route('/osos/:oso_id')
         oso.nombre = req.body.nombre || oso.nombre;
         oso.cantidad = req.body.cantidad || oso.cantidad;
         res.json({
-            message: 'Oso actualizado!',
-            data: oso
-        });
-    })
-    .delete(function (req, res) {
-        var oso = osos.filter(x => x.id == req.params.oso_id);
-        if (oso !== null && oso !== undefined) {
-            var index = osos.indexOf(oso);
-            if (index > -1) {
-                array.splice(index, 1);
-            }
-        }
-        res.send({
-            message: "El oso fue eliminado"
+            message: 'Oso actualizado!'
         });
     });
 
