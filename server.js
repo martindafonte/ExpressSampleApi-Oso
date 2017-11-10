@@ -5,12 +5,15 @@
 var express = require('express');
 var oso_server = require('./src/oso-api');
 
-var app = oso_server.app;
+var app = express();
+
 app.use(express.static('public'));
 
 app.get("/", function (request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
+
+app.use("/api", oso_server.router);
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT || 8080, function () {

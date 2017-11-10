@@ -4,16 +4,16 @@ var bodyParser = require('body-parser');
 var morgan = require('morgan');
 
 // Creamos la app express
-var app = express();
+var router = new express.Router();
 
 // Configuramos la app
-//app.use(morgan('dev')); // log requests a la console
+router.use(morgan('dev')); // log requests a la console
 
 // Se configura body parsers
-app.use(bodyParser.urlencoded({
+router.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(bodyParser.json());
+router.use(bodyParser.json());
 
 
 
@@ -110,9 +110,7 @@ router.route('/osos/:oso_id')
     });
 
 
-// REGISTER OUR ROUTES -------------------------------
-app.use('/api', router);
 
 module.exports = {
-    app: app
+    router: router
 };
