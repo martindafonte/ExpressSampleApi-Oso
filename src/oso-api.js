@@ -2,6 +2,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
+var guid = require('guid');
 
 // Creamos la app express
 var app = express();
@@ -20,16 +21,20 @@ app.use(bodyParser.json());
 // MODELO DE DATOS
 var osos = [{
     nombre: "Pardo",
-    cantidad: 450000
+    cantidad: 450000,
+    id: guid.raw()
 }, {
     nombre: "Panda",
-    cantidad: 10000
+    cantidad: 10000,
+    id: guid.raw()
 }, {
     nombre: "Greasly",
-    cantidad: 125000
+    cantidad: 125000,
+    id: guid.raw()
 }, {
     nombre: "Circo",
-    cantidad: 5000
+    cantidad: 5000,
+    id: guid.raw()
 }];
 
 // RUTAS DE LA API
@@ -60,15 +65,17 @@ router.route('/osos')
 
     // crear un oso (POST http://localhost:8080/api/osos)
     .post(function (req, res) {
-        console.log('Se recibieron los parámetros:',req.body);
+        console.log('Se recibieron los parámetros:', req.body);
         var oso = {
             nombre: req.body.nombre,
-            cantidad: req.body.cantidad
+            cantidad: req.body.cantidad,
+            id: guid.raw()
         };
 
         osos.push(oso);
         res.json({
-            mensaje: 'Oso agregado!'
+            mensaje: 'Oso agregado!',
+            data: oso
         });
     })
 
@@ -83,26 +90,41 @@ router.route('/osos/:oso_id')
 
     // devuelve un oso en particular
     .get(function (req, res) {
-        var oso = osos[+(req.params.oso_id)];
-        if (oso === null || oso === undefined)
+        var oso = osos.filter(x => x.id == req.params.oso_id);
+        if (oso === null || oso === undefined || oso === [])
             res.status(404).send({
                 mensaje: "No existe el oso con id: " + req.params.oso_id
             });
-        res.json(oso);
+        res.json(oso[0]);
     })
 
     // actualizar el oso con este id
     .put(function (req, res) {
-        var oso = osos[+(req.params.oso_id)];
-        if (oso === null || oso === undefined) {
+        var oso = osos.filter(x => x.id == req.params.oso_id);
+        if (oso === null || oso === undefined || oso === []) {
             res.status(404).send({
                 message: "No existe el oso con id: " + req.params.oso_id
             });
         }
+        oso = oso[0];
         oso.nombre = req.body.nombre || oso.nombre;
         oso.cantidad = req.body.cantidad || oso.cantidad;
         res.json({
-            message: 'Oso actualizado!'
+            message: 'Oso actualizado!',
+            data: oso
+        });
+    })
+    .delete(function (req, res) {
+        var oso = osos.filter(x => x.id == req.params.oso_id);
+        if (oso !== null && oso !== undefined && oso !== []) {
+            oso = oso[0];
+            var index = osos.indexOf(oso);
+            if (index > -1) {
+                osos.splice(index, 1);
+            }
+        }
+        res.send({
+            message: "El oso fue eliminado"
         });
     });
 
